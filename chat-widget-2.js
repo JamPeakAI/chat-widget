@@ -1,144 +1,291 @@
-.n8n-chat-widget {
-    --chat--color-primary: var(--n8n-chat-primary-color, #854fff); /* Violet */
-    --chat--color-secondary: var(--n8n-chat-secondary-color, #6b3fd4); /* Paars */
-    --chat--color-background: var(--n8n-chat-background-color, #ffffff); /* Wit */
-    --chat--color-font: var(--n8n-chat-font-color, #333333); /* Donkergrijs */
-    font-family: 'Inter', sans-serif;
-}
+// Chat Widget Script (Custom Design)
+(function () {
+  // Create and inject styles
+  const styles = `
+    .n8n-chat-widget {
+      --chat--color-primary: var(--n8n-chat-primary-color, #0ea5e9);
+      --chat--color-secondary: var(--n8n-chat-secondary-color, #0369a1);
+      --chat--color-background: var(--n8n-chat-background-color, #f8fafc);
+      --chat--color-font: var(--n8n-chat-font-color, #1e293b);
+      font-family: 'Inter', sans-serif;
+    }
 
-/* Chat container - aangepaste hoeken, subtiele schaduwen */
-.n8n-chat-widget .chat-container {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    z-index: 1000;
-    display: none;
-    width: 380px;
-    height: 600px;
-    background: var(--chat--color-background);
-    border-radius: 16px;  /* Strakkere randen */
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);  /* Zachte schaduw */
-    border: none;
-    overflow: hidden;
-    font-family: inherit;
-    transform: scale(1); /* Start met normale grootte */
-    transition: transform 0.3s ease, opacity 0.3s ease-in-out;  /* Mooie transities */
-}
+    .n8n-chat-widget .chat-container {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 1000;
+      width: 360px;
+      height: 580px;
+      background: var(--chat--color-background);
+      border-radius: 16px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+      overflow: hidden;
+      display: none;
+      flex-direction: column;
+      border: 1px solid #e2e8f0;
+    }
 
-/* Stijl voor het open- en dichtklappen */
-.n8n-chat-widget .chat-container.open {
-    display: flex;
-    flex-direction: column;
-    transform: scale(1.05);  /* Lichte vergroting bij openen */
-}
+    .n8n-chat-widget .chat-container.open {
+      display: flex;
+    }
 
-/* Header - Modern logo en brandname */
-.n8n-chat-widget .brand-header {
-    padding: 16px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    border-bottom: 1px solid rgba(133, 79, 255, 0.2);  /* Lichte onderrand */
-    position: relative;
-    background: #f4f4f4;
-    border-top-left-radius: 16px;
-    border-top-right-radius: 16px;
-}
+    .n8n-chat-widget .brand-header {
+      background: var(--chat--color-primary);
+      color: white;
+      display: flex;
+      align-items: center;
+      padding: 16px;
+      position: relative;
+    }
 
-/* Verander logo naar dynamische logo */
-.n8n-chat-widget .brand-header img {
-    width: 36px;
-    height: 36px;
-    object-fit: cover;
-    border-radius: 50%;  /* Cirkelvormig logo */
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1); /* Lichte schaduw */
-}
+    .n8n-chat-widget .brand-header img {
+      width: 32px;
+      height: 32px;
+      margin-right: 12px;
+      border-radius: 50%;
+    }
 
-/* Stijl van de nieuwe chat button */
-.n8n-chat-widget .new-chat-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    width: 100%;
-    padding: 18px 24px;
-    background: linear-gradient(135deg, #ff76c6, #854fff); /* Zachte kleurgradients */
-    color: white;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    font-size: 18px;
-    font-weight: bold;
-    transition: all 0.3s ease;
-}
+    .n8n-chat-widget .brand-header span {
+      font-size: 18px;
+      font-weight: 600;
+    }
 
-.n8n-chat-widget .new-chat-btn:hover {
-    transform: scale(1.05);  /* Mooie vergroting bij hover */
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2); /* Schaduw bij hover */
-}
+    .n8n-chat-widget .close-button {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      background: none;
+      border: none;
+      font-size: 18px;
+      color: white;
+      cursor: pointer;
+      opacity: 0.8;
+    }
 
-/* Chat messages - Maak het moderner met ronde hoeken */
-.n8n-chat-widget .chat-message {
-    padding: 14px 18px;
-    margin: 8px 0;
-    border-radius: 16px;
-    max-width: 80%;
-    word-wrap: break-word;
-    font-size: 15px;
-    line-height: 1.6;
-    background: #f9f9f9;
-}
+    .n8n-chat-widget .new-conversation,
+    .n8n-chat-widget .chat-interface {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      text-align: center;
+    }
 
-/* Stijl voor gebruikers- en chatbotberichten */
-.n8n-chat-widget .chat-message.user {
-    background: linear-gradient(135deg, #76ff5b, #5bcbff); /* Zachte gradient voor gebruiker */
-    color: white;
-    align-self: flex-end;
-    box-shadow: 0 4px 16px rgba(133, 79, 255, 0.3); /* Schaduw effect */
-}
+    .n8n-chat-widget .welcome-text {
+      font-size: 22px;
+      font-weight: 600;
+      margin-bottom: 20px;
+      color: var(--chat--color-font);
+    }
 
-.n8n-chat-widget .chat-message.bot {
-    background: #e9e9e9;
-    border: 1px solid #ddd;
-    color: var(--chat--color-font);
-    align-self: flex-start;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-}
+    .n8n-chat-widget .new-chat-btn {
+      background: var(--chat--color-primary);
+      color: white;
+      border: none;
+      padding: 14px 24px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 500;
+      margin-bottom: 12px;
+      transition: background 0.3s;
+    }
 
-/* Verbeterde invoerveldstijl */
-.n8n-chat-widget .chat-input textarea {
-    flex: 1;
-    padding: 14px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    background: #f4f4f4;
-    color: #333;
-    resize: none;
-    font-size: 16px;
-    transition: border-color 0.3s;
-}
+    .n8n-chat-widget .new-chat-btn:hover {
+      background: var(--chat--color-secondary);
+    }
 
-.n8n-chat-widget .chat-input textarea:focus {
-    border-color: #854fff; /* Focus effect */
-}
+    .n8n-chat-widget .chat-messages {
+      flex: 1;
+      padding: 16px;
+      overflow-y: auto;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
 
-/* Footer met moderne stijl */
-.n8n-chat-widget .chat-footer {
-    padding: 10px;
-    background: var(--chat--color-background);
-    border-top: 1px solid #ddd;
-    text-align: center;
-}
+    .n8n-chat-widget .chat-message {
+      max-width: 75%;
+      padding: 12px 16px;
+      border-radius: 12px;
+      font-size: 14px;
+      line-height: 1.4;
+    }
 
-.n8n-chat-widget .chat-footer a {
-    color: #854fff;
-    text-decoration: none;
-    font-size: 14px;
-    opacity: 0.8;
-    transition: opacity 0.2s;
-}
+    .n8n-chat-widget .chat-message.user {
+      background: var(--chat--color-primary);
+      color: white;
+      align-self: flex-end;
+    }
 
-.n8n-chat-widget .chat-footer a:hover {
-    opacity: 1;
-}
+    .n8n-chat-widget .chat-message.bot {
+      background: #e2e8f0;
+      color: #1e293b;
+      align-self: flex-start;
+    }
 
+    .n8n-chat-widget .chat-input {
+      padding: 12px;
+      display: flex;
+      border-top: 1px solid #e2e8f0;
+      gap: 8px;
+    }
+
+    .n8n-chat-widget .chat-input textarea {
+      flex: 1;
+      border-radius: 8px;
+      border: 1px solid #cbd5e1;
+      padding: 10px;
+      font-size: 14px;
+      resize: none;
+    }
+
+    .n8n-chat-widget .chat-input button {
+      background: var(--chat--color-primary);
+      color: white;
+      border: none;
+      padding: 0 16px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .n8n-chat-widget .chat-toggle {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--chat--color-primary);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 56px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+  `;
+
+  const fontLink = document.createElement("link");
+  fontLink.rel = "stylesheet";
+  fontLink.href = "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap";
+  document.head.appendChild(fontLink);
+
+  const styleSheet = document.createElement("style");
+  styleSheet.textContent = styles;
+  document.head.appendChild(styleSheet);
+
+  const config = window.ChatWidgetConfig || { branding: {}, style: {}, webhook: {} };
+  let sessionId = '';
+
+  const widget = document.createElement("div");
+  widget.className = "n8n-chat-widget";
+
+  const container = document.createElement("div");
+  container.className = "chat-container";
+
+  const interfaceHTML = `
+    <div class="brand-header">
+      <img src="${config.branding.logo || ''}" alt="logo">
+      <span>${config.branding.name || 'ChatBot'}</span>
+      <button class="close-button">&times;</button>
+    </div>
+    <div class="new-conversation">
+      <h2 class="welcome-text">${config.branding.welcomeText || 'Hallo! Waarmee kan ik helpen?'}</h2>
+      <button class="new-chat-btn">Start Gesprek</button>
+    </div>
+    <div class="chat-interface" style="display: none;">
+      <div class="chat-messages"></div>
+      <div class="chat-input">
+        <textarea rows="1" placeholder="Typ een bericht..."></textarea>
+        <button type="submit">Verzend</button>
+      </div>
+    </div>
+  `;
+
+  container.innerHTML = interfaceHTML;
+  widget.appendChild(container);
+
+  const toggle = document.createElement("button");
+  toggle.className = "chat-toggle";
+  toggle.innerHTML = `💬`;
+  widget.appendChild(toggle);
+
+  document.body.appendChild(widget);
+
+  // DOM refs
+  const newConversation = container.querySelector(".new-conversation");
+  const chatInterface = container.querySelector(".chat-interface");
+  const messages = container.querySelector(".chat-messages");
+  const input = container.querySelector("textarea");
+  const sendBtn = container.querySelector("button[type='submit']");
+
+  function scrollToBottom() {
+    messages.scrollTop = messages.scrollHeight;
+  }
+
+  function appendMessage(type, content) {
+    const div = document.createElement("div");
+    div.className = `chat-message ${type}`;
+    div.innerHTML = content;
+    messages.appendChild(div);
+    scrollToBottom();
+  }
+
+  function startChat() {
+    sessionId = crypto.randomUUID();
+    newConversation.style.display = 'none';
+    chatInterface.style.display = 'flex';
+    appendMessage('bot', config.branding.welcomeText || 'Hallo! Waarmee kan ik helpen?');
+  }
+
+  async function sendMessage(msg) {
+    appendMessage('user', msg);
+    input.value = '';
+    scrollToBottom();
+    try {
+      const response = await fetch(config.webhook.url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: "sendMessage",
+          sessionId,
+          route: config.webhook.route,
+          chatInput: msg
+        })
+      });
+      const data = await response.json();
+      appendMessage('bot', data.output);
+    } catch (e) {
+      appendMessage('bot', 'Er is iets misgegaan. Probeer opnieuw.');
+    }
+  }
+
+  toggle.addEventListener("click", () => {
+    container.classList.toggle("open");
+  });
+
+  container.querySelector(".close-button").addEventListener("click", () => {
+    container.classList.remove("open");
+  });
+
+  container.querySelector(".new-chat-btn").addEventListener("click", startChat);
+
+  sendBtn.addEventListener("click", () => {
+    const msg = input.value.trim();
+    if (msg) sendMessage(msg);
+  });
+
+  input.addEventListener("keypress", (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      const msg = input.value.trim();
+      if (msg) sendMessage(msg);
+    }
+  });
+})();
